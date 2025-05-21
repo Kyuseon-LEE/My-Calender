@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+<meta charset="UTF-8">
+<title th:replace="~{/include/title.html::title}"></title>
+
+<link rel="stylesheet" th:href="@{/css/common.css}">
+<link rel="stylesheet" th:href="@{/css/board/list.css}">
+<link rel="stylesheet" th:href="@{/css/header_nav_footer.css}">
+
+<script th:replace="~{/include/common_js.html::jquery_cdn}"></script>
+<script th:replace="~{/include/list_js.html::js}"></script>
+
+</head>
+<body>
+
+	<header th:replace="~{/include/header_nav_footer.html::header}">
+	</header>
+	
+	<nav th:replace="~{/include/header_nav_footer.html::nav}">
+	</nav>
+	
+	<section>
+		<div id="section_wrap">
+			<div class="word">
+				BOARD LIST
+			</div>
+			
+			<div class="board_list">
+				<table>
+					<thead>
+						<tr>
+							<th>b_no</th>
+							<th>m_id</th>
+							<th>b_title</th>
+							<th>b_reg_date</th>
+							<th>b_hit</th>
+						</tr>
+					</thead>
+					
+					<tbody>
+						<tr th:each="boardDto : ${resultMap.boardDtos}">
+							<td th:text="${boardDto.b_no}"></td>						
+							<td th:text="${boardDto.m_id}"></td>						
+							<td>
+							
+								<span th:each="n : ${#numbers.sequence(0, boardDto.b_indent)}">
+									<span th:if="${n != 0}">&nbsp;</span>
+									<span th:if="${n != 0 && n == boardDto.b_indent}">&#8627</span>
+								</span>
+								
+								<a th:href="@{/board/body(b_no=${boardDto.b_no})}" th:text="${boardDto.b_title}"></a>
+								
+							</td>
+							<td th:text="${boardDto.b_reg_date}"></td>
+							<td th:text="${boardDto.b_hit}"></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			
+			<div class="board_write">
+				<a th:href="@{/board/write_form}">write</a>
+			</div>
+			
+			
+		</div>
+	</section>
+	
+	<footer th:replace="~{/include/header_nav_footer.html::footer}">
+	</footer>
+	
+</body>
+</html>

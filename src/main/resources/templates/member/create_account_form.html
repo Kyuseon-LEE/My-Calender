@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title th:replace="~{/include/title.html::title}"></title>
+
+<link rel="stylesheet" th:href="@{/css/common.css}">
+<link rel="stylesheet" th:href="@{/css/create_account_form.css}">
+<link rel="stylesheet" th:href="@{/css/header_nav_footer.css}">
+
+<script th:src="@{/js/create_account_form.js}"></script>
+
+</head>
+<body>
+
+	<header th:replace="~{/include/header_nav_footer.html::header}">
+	</header>
+	
+	<nav th:replace="~{/include/header_nav_footer.html::nav}">
+	</nav>
+	
+	<section>
+		<div id="section_wrap">
+			<div class="word">
+				CREATE ACCOUNT FORM
+			</div>
+			<div class="create_account_form">
+				<form 	th:action="@{/member/create_account_confirm}" 
+						name="create_account_form" 
+						method="post">
+					<input type="text" name="m_id" placeholder="INPUT ID"><br>
+					<input type="password" name="m_pw" placeholder="INPUT PW"><br>
+					<input type="email" name="m_mail" placeholder="INPUT MAIL"><br>
+					<input type="text" name="m_phone" placeholder="INPUT PHONE"><br>
+					<input type="button" value="create account" onclick="createAccountForm();">
+					<input type="reset" value="reset">
+				</form>
+			</div>
+			
+			<div class="go_login_form">
+				<a th:href="@{/member/member_login_form}">Already have an account? login</a>
+			</div>
+			
+		</div>
+		
+	</section>
+	
+	<footer th:replace="~{/include/header_nav_footer.html::footer}">
+	</footer>
+	
+</body>
+</html>

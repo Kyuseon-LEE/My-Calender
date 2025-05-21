@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTO Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.office.calender.board.IBoardDao">
+
+	<insert id="insertNewPost" parameterType="com.office.calender.board.BoardDto">
+		INSERT INTO TBL_BOARD(M_ID, B_TITLE, B_BODY)
+		VALUES(#{m_id}, #{b_title}, #{b_body})
+	</insert>
+	
+	<select id="getMaxNo">
+		SELECT MAX(B_NO) FROM TBL_BOARD
+	</select>
+	
+	<update id="updateGroup" parameterType="Integer">
+		UPDATE TBL_BOARD SET B_GROUP = #{maxNo} WHERE B_NO = #{maxNo}
+	</update>
+	
+	<select id="getAllPost" parameterType="String" resultType="com.office.calender.board.BoardDto">
+		SELECT * FROM TBL_BOARD WHERE M_ID = #{m_id} ORDER BY B_GROUP DESC, B_STEP ASC
+	</select>
+	
+	<select id="getPostByBNo" resultType="com.office.calender.board.BoardDto">
+		SELECT * FROM TBL_BOARD WHERE B_NO = #{b_no}
+	</select>
+	
+	<update id="setReplyShape" parameterType="com.office.calender.board.BoardDto">
+		UPDATE TBL_BOARD SET B_STEP = B_STEP + 1 WHERE B_GROUP = #{b_group} AND B_STEP > #{b_step}
+	</update>
+	
+	<insert id="insertNewReplyPost" parameterType="com.office.calender.board.BoardDto">
+		INSERT INTO TBL_BOARD(M_ID, B_TITLE, B_BODY, B_GROUP, B_STEP, B_INDENT)
+		VALUES(#{m_id}, #{b_title}, #{b_body}, #{b_group}, #{b_step} + 1, #{b_indent} + 1)	
+	</insert>
+	
+	<update id="updatePost" parameterType="com.office.calender.board.BoardDto">
+		UPDATE TBL_BOARD SET B_TITLE = #{b_title}, B_BODY = #{b_body}, B_MOD_DATE = NOW() WHERE B_NO = #{b_no}
+	</update>
+
+</mapper>

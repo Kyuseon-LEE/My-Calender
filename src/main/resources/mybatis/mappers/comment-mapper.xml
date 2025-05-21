@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTO Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.office.calender.organizer.comment.ICommentDao">
+
+	<insert id="insertComment" 
+			parameterType="Map">
+	
+		INSERT INTO 
+			TBL_COMMENT(P_ORI_NO, M_ID, C_TXT) 
+		VALUES(#{p_ori_no}, #{m_id}, #{comment})
+		
+	</insert>
+	
+	<resultMap type="com.office.calender.organizer.OrganizerDto" id="organizerDto">
+		<result column="p_no" property="p_no"/>
+		<result column="p_ori_no" property="p_ori_no"/>
+		<result column="p_ori_owner_id" property="p_ori_owner_id"/>
+		<result column="m_id" property="m_id"/>
+		<result column="p_year" property="p_year"/>
+		<result column="p_month" property="p_month"/>
+		<result column="p_date" property="p_date"/>
+		<result column="p_title" property="p_title"/>
+		<result column="p_body" property="p_body"/>
+		<result column="p_img_name" property="p_img_name"/>
+		<result column="p_reg_date" property="p_reg_date"/>
+		<result column="p_mod_date" property="p_mod_date"/>
+	</resultMap>
+	
+	<resultMap type="com.office.calender.member.MemberDto" id="memberDto">
+		<result column="m_no" property="m_no"/>
+		<result column="m_id" property="m_id"/>
+		<result column="m_pw" property="m_pw"/>
+		<result column="m_mail" property="m_mail"/>
+		<result column="m_phone" property="m_phone"/>
+		<result column="m_reg_date" property="m_reg_date"/>
+		<result column="m_mod_date" property="m_mod_date"/>
+	</resultMap>
+	
+	<resultMap type="com.office.calender.organizer.comment.CommentDto" id="commentDto">
+		<result column="c_no" property="c_no"/>
+		<result column="c_txt" property="c_txt"/>
+		<result column="c_reg_date" property="c_reg_date"/>
+		<result column="c_mod_date" property="c_mod_date"/>
+		<collection property="organizerDto" resultMap="organizerDto"/>
+		<collection property="memberDto" resultMap="memberDto"/>
+	</resultMap>
+	
+	<select id="getComments" 
+			parameterType="Map" 
+			resultMap="commentDto">
+	
+		SELECT 
+			* 
+		FROM 
+			TBL_COMMENT 
+		WHERE 
+			P_ORI_NO = #{p_ori_no} 
+		ORDER BY C_NO DESC	
+	
+	</select>
+	
+</mapper>

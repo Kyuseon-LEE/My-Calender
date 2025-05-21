@@ -1,0 +1,57 @@
+section {
+	width: 100%;
+	padding: 30px 0;
+}
+
+section #section_wrap {
+	width: 800px;
+	margin: 0 auto;
+}
+
+section #section_wrap .word {
+	text-align: center;
+	font-weight: bolder;
+	}
+
+section #section_wrap .create_account_form {
+	margin-top: 50px;
+	margin-bottom: 30px;
+	text-align: center;
+}
+
+section #section_wrap .create_account_form input {
+	width: 300px;
+	padding: 5px;
+	margin: 3px;
+	}
+
+section #section_wrap .create_account_form input[type='button'],
+section #section_wrap .create_account_form input[type='reset'] {
+	width: 148px;
+	}
+
+section #section_wrap .delete_account {
+	text-align: center;
+	margin-bottom: 50px;
+	}
+
+section #section_wrap .delete_account a {
+	display: inline-block;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	padding: 5px 10px;
+	}
+
+/* GO LOGIN START */
+section #section_wrap .go_login_form {
+	text-align: center;
+	margin: 50px 0;
+}
+/* LOGIN END */
+
+/* GO CREATE ACCOUNT START */
+section #section_wrap .go_create_account_form {
+	text-align: center;
+	margin: 50px 0;
+}
+/* CREATE ACCOUNT END */

@@ -1,0 +1,45 @@
+section {
+   width: 100%;
+   padding: 30px 0;
+}
+
+section #section_wrap {
+   width: 1200px;
+   margin: 0 auto;
+}
+
+
+/* WORD START */
+section #section_wrap .word {
+   text-align: center;
+   font-weight: bolder;
+   }
+/* WORD END */
+
+/* BOARD BODY START */
+section #section_wrap .body {
+   width: 1200px;
+   margin: 50px auto;
+}
+
+section #section_wrap .body div {
+   margin: 0;
+   padding: 10px;
+   }
+/* BOARD BODY END */
+
+/* BOARD LIST START */
+section #section_wrap .board_list {
+   width: 1200px;
+   margin: 3px auto;
+   text-align: right;
+   }
+
+section #section_wrap .board_list a {
+   display: inline-block;
+   padding: 3px 10px;
+   border: 1px solid #ccc;
+   border-radius: 3px;
+   margin-left: 5px;
+   }
+/* BOARD LIST END */

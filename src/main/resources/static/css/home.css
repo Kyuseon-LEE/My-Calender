@@ -1,0 +1,32 @@
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+#section_wrap {
+  text-align: center;
+  padding: 50px 20px;
+}
+
+.word span {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #343a40;
+  display: block;
+  margin-bottom: 30px;
+}
+
+.intro img {
+  max-width: 50%;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+.past-date {
+  background-color: #e9ecef;
+  color: #6c757d;
+  pointer-events: none; /* 클릭 안 되게 */
+  cursor: not-allowed;
+  opacity: 0.6;
+}

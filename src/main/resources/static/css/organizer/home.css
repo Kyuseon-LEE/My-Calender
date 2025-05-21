@@ -1,0 +1,316 @@
+section {
+	width: 100%;
+	padding: 30px 0;
+}
+
+section #section_wrap {
+	width: 1400px;
+	margin: 0 auto;
+}
+
+
+/* WORD START */
+section #section_wrap .word {
+	text-align: center;
+	font-weight: bolder;
+	}
+/* WORD END */
+
+
+/* YEAR MONTH SELECT START */
+section #section_wrap .select_wrap {
+	width: 500px;
+	margin: 20px auto;
+	padding: 10px 30px;
+	text-align: center;
+	border-radius: 60px;
+	text-align: center;
+	background-color: #cffff6;
+	}
+
+section #section_wrap .select_wrap select {
+	width: 100px;
+	padding: 5px;
+	text-align: right;
+	margin: 3px;
+	border: 0;
+	border-bottom: 1px solid #ccc;
+	background-color: #cffff6;
+	}
+/* YEAR MONTH SELECT END */
+
+
+/* CALENDER TABLE START */
+section #section_wrap .organizer {
+	width: 1400px;
+	margin: 0 auto 30px;
+	}
+
+section #table_calender {
+	width: 100%;
+	border-collapse: collapse;
+	}
+
+section #table_calender tr {
+	
+	}
+
+section #table_calender tr th {
+	border: 1px solid #ccc;
+	background-color: #f2f2f2;
+	padding: 5px 0;
+	}
+
+section #table_calender tr th:first-child {
+	background-color: #fff5f5;
+	}
+	
+section #table_calender tr th:last-child {
+	background-color: #e8fdff;
+	}
+
+section #table_calender tr td {
+	border: 1px solid #ccc;
+	text-align: right;
+	height: 150px;
+	vertical-align: top;
+	padding: 3px;
+	width: 210px;
+	}
+
+section #table_calender tr td:first-child {
+	background-color: #fff5f5;
+	}
+
+section #table_calender tr td:last-child {
+	background-color: #e8fdff;
+	}
+
+section #table_calender tr td a.write {
+	display: inline-block;
+	border-radius: 3px;
+	padding: 0 6px 2px;
+	background-color: #4eccae;
+	color: #fff;
+	}
+
+section #table_calender tr td ul.plan {
+	overflow: hidden;
+	padding: 5px;
+}
+
+section #table_calender tr td ul.plan li {
+	border-bottom: 1px dashed #ccc;
+	margin-top: 5px;
+	}
+/* CALENDER TABLE END */
+
+
+/* CALENDER WRITE START */
+section #calender_write {
+	display: none; /* 그대로 유지 */
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.7);
+	z-index: 9999;
+}
+
+section #calender_write .calender_write_wrap {
+	width: 700px;
+	position: absolute;            /* 중요: 위치 기준 설정 */
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);  /* 가운데 정렬 핵심 */
+	background-color: #fff;
+	border: 1px solid #ccc;
+	border-radius: 10px;
+	text-align: center;
+	padding: 50px;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* 연/월/일 선택 박스 */
+section #calender_write .calender_write_wrap .year_month_date {
+	margin-bottom: 20px;
+}
+
+/* 셀렉트 박스 */
+section #calender_write .calender_write_wrap select {
+	width: 70px;
+	padding: 5px;
+	text-align: right;
+	margin: 3px;
+	border: 1px solid #ccc;
+}
+
+/* 텍스트 입력 */
+section #calender_write .calender_write_wrap input {
+	width: 400px;
+	padding: 10px;
+	margin: 3px;
+	border: 1px solid #ccc;
+}
+
+/* 파일 업로드 */
+section #calender_write .calender_write_wrap input[type='file'] {
+	width: 402px;
+	border: 1px solid #ccc;
+}
+
+/* 버튼 */
+section #calender_write .calender_write_wrap input[type='button'],
+section #calender_write .calender_write_wrap input[type='reset'] {
+	width: 120px;
+	cursor: pointer;
+}
+/* CALENDER WRITE END */
+
+
+/* CALENDER DETAIL START */
+section #calender_detail {
+	display: none;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.7);
+	z-index: 9999;
+}
+
+section #calender_detail .calender_detail_wrap {
+	width: 800px;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	text-align: center;
+	padding: 50px 0;
+	background-color: #fff;
+	border: 1px solid #ccc;
+	border-radius: 10px;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+section #calender_detail .calender_detail_wrap ul {
+	overflow: hidden;
+	}
+
+section #calender_detail .calender_detail_wrap ul li {
+	float: left;
+	}
+
+section #calender_detail .calender_detail_wrap ul li.detail {
+	width: 450px;
+	padding: 0 10px;
+	}
+	
+section #calender_detail .calender_detail_wrap ul li.share_reply {
+	width: 285px;
+	padding: 0 10px;
+	text-align: left
+	}
+	
+section #calender_detail .calender_detail_wrap ul li.share_reply div:nth-child(1) {
+	border-bottom: 1px solid #ccc;
+	margin-bottom: 5px;
+	text-align: center;
+	}
+	
+section #calender_detail .calender_detail_wrap ul li.share_reply div:nth-child(2) input[name='search_friend'] {
+	width: 255px;
+	}
+
+section #calender_detail .calender_detail_wrap ul li.share_reply div:nth-child(3) {
+	width: 262px;
+	position: relative;
+	top: -3px;
+	left: 3px;
+	border-radius: 2px;
+	border: 1px solid #ccc;
+	padding: 2px 7px;
+	display: none;
+	}
+
+section #calender_detail .calender_detail_wrap ul li.share_reply div:nth-child(3) ul {
+	width: 100%;
+	}
+
+section #calender_detail .calender_detail_wrap ul li.share_reply div:nth-child(3) ul li {
+	width: 100%;
+	clear: both;
+	padding: 3px 0;
+	}
+
+section #calender_detail .calender_detail_wrap ul li.share_reply div:nth-child(3) ul li:hover {
+	background-color: #f2f2f2;
+	}
+
+section #calender_detail .calender_detail_wrap ul li.share_reply div:nth-child(4) {
+	border-bottom: 1px solid #ccc;
+	margin-top: 30px;
+	margin-bottom: 5px;
+	text-align: center;
+	}
+
+section #calender_detail .calender_detail_wrap ul li.share_reply div:nth-child(5) input[name='comment'] {
+	width: 210px;
+	}
+	
+section #calender_detail .calender_detail_wrap ul li.share_reply div:nth-child(6) {
+	width: 262px; height: 318px;
+	position: relative;
+	top: 3px;
+	left: 3px;
+	padding: 2px 0;
+	border: 1px solid #ccc;
+	border-radius: 3px;
+	overflow: auto;
+	}
+
+section #calender_detail .calender_detail_wrap ul li.share_reply div:nth-child(6) ul {
+	width: 100%;
+	}
+
+section #calender_detail .calender_detail_wrap ul li.share_reply div:nth-child(6) ul li {
+	width: 250px;
+	clear: both;
+	padding: 5px;
+	border-bottom: 1px solid #e3e3e3;
+	border-radius: 2px;
+	}
+	
+section #calender_detail .calender_detail_wrap .year_month_date {
+	margin-bottom: 20px;
+	}
+
+section #calender_detail .calender_detail_wrap select {
+	width: 70px;
+	padding: 5px;
+	text-align: right;
+	margin: 3px;
+	border: 1px solid #ccc;
+	}
+	
+section #calender_detail .calender_detail_wrap input {
+	width: 400px;
+	padding: 10px;
+	margin: 3px;
+	}
+
+section #calender_detail .calender_detail_wrap img.plan_img {
+	max-width: 424px;
+}
+
+section #calender_detail .calender_detail_wrap input[type='file'] {
+	width: 402px;
+	border: 1px solid #ccc;
+	}
+	
+section #calender_detail .calender_detail_wrap input[type='button'] {
+	width: 120px;
+	}
+/* CALENDER DETAIL END */

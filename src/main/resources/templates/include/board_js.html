@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+	<script th:fragment="js">
+	
+		function boardWriteForm() {
+			console.log('boardWriteForm()');
+			
+			let form = document.write_form;
+			if(form.b_title.value === ''){
+				alert('INPUT POST TITLE');
+				form.b_title.focus();
+			} else if(form.b_body.value === ''){
+				alert('INPUT POST BODY');
+				form.b_body.focus();
+			} else 	{
+				form.submit();
+			}
+			
+		}
+		
+		function boardWriteCancel() {
+			console.log('boardWriteCancel()');
+			
+			location.href="/board/list";
+		}
+		
+		function boardReplyForm(){
+			console.log('boardReplyForm()');
+			let form = document.reply_form;
+			if(form.b_title.value === ''){
+				alert('INPUT POST TITLE');
+				form.b_title.focus();
+			} else if(form.b_body.value === ''){
+				alert('INPUT POST BODY');
+				form.b_body.focus();
+			} else 	{
+				form.submit();
+			}
+		}
+		
+		function boardReplyCancel(){
+			console.log('boardReplyCancel()');
+			
+			history.back();
+			
+		}
+		
+		function boardModifyForm(){
+			console.log('boardModifyForm()');
+			let form = document.modify_form;
+			if(form.b_title.value === ''){
+				alert('INPUT POST TITLE');
+				form.b_title.focus();
+			} else if(form.b_body.value === ''){
+				alert('INPUT POST BODY');
+				form.b_body.focus();
+			} else 	{
+				form.submit();
+			}
+			
+		}
+		
+		function boardModifyCancel(){
+			console.log('boardModifyCancel()');
+			
+			history.back();
+		}
+	
+	</script>
+
+
+</html>

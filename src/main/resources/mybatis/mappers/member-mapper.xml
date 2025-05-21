@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTO Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.office.calender.member.IMemberDao">
+
+	<select id="isMember" 
+			parameterType="String" 
+			resultType="Boolean">
+	
+		SELECT 
+			COUNT(*) 
+		FROM 
+			TBL_MEMBER 
+		WHERE 
+			M_ID = #{m_id}
+			
+	</select>
+	
+	<insert id="insertMember" 
+			parameterType="com.office.calender.member.MemberDto">
+	
+		INSERT INTO 
+			TBL_MEMBER(M_ID, M_PW, M_MAIL, M_PHONE) 
+		VALUES(#{m_id}, #{m_pw}, #{m_mail}, #{m_phone})
+	
+	</insert>
+	
+	<select id="selectMemberForLogin" 
+			parameterType="com.office.calender.member.MemberDto" 
+			resultType="com.office.calender.member.MemberDto">
+	
+		SELECT 
+			* 
+		FROM 
+			TBL_MEMBER 
+		WHERE 
+			M_ID = #{m_id}
+	
+	</select>
+	
+	<select id="getLoginedMemberByMId" 
+			parameterType="String" 
+			resultType="com.office.calender.member.MemberDto">
+	
+		SELECT 
+			* 
+		FROM 
+			TBL_MEMBER 
+		WHERE 
+			M_ID = #{m_id}
+		
+	</select>
+	
+	<update id="updateMemberForModify" 
+			parameterType="com.office.calender.member.MemberDto">
+	
+		UPDATE 
+			TBL_MEMBER 
+		SET 
+			M_MAIL = #{m_mail}, 
+			M_PHONE= #{m_phone}, 
+			M_MOD_DATE = NOW() 
+		WHERE 
+			M_NO = #{m_no}
+	
+	</update>
+	
+	<delete id="deleteMemberByMId" 
+			parameterType="String">
+	
+		DELETE FROM 
+			TBL_MEMBER 
+		WHERE 
+			M_ID = #{m_id}
+	
+	</delete>
+	
+	<select id="selectMemberByMId" 
+			parameterType="String" 
+			resultType="com.office.calender.member.MemberDto">
+	
+		SELECT 
+			* 
+		FROM 
+			TBL_MEMBER 
+		WHERE 
+			M_ID = #{m_id}
+	
+	</select>
+
+</mapper>

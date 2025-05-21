@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+<meta charset="UTF-8">
+<title th:replace="~{/include/title.html::title}"></title>
+
+<link rel="stylesheet" th:href="@{/css/common.css}">
+<link rel="stylesheet" th:href="@{/css/board/write_form.css}">
+<link rel="stylesheet" th:href="@{/css/header_nav_footer.css}">
+
+<script th:replace="~{/include/common_js.html::jquery_cdn}"></script>
+<script th:replace="~{/include/board_js.html::js}"></script>
+
+</head>
+<body>
+
+	<header th:replace="~{/include/header_nav_footer.html::header}">
+	</header>
+	
+	<nav th:replace="~{/include/header_nav_footer.html::nav}">
+	</nav>
+	
+	<section>
+		<div id="section_wrap">
+			<div class="word">
+				BOARD WRITE FORM
+			</div>
+			
+			<div class="board_write_form">
+				<form th:action="@{/board/write_confirm}" name="write_form" method="post">
+					
+					<input type="text" name="b_title" placeholder="INPUT POST TITLE"><br>
+					<textarea rows="10" cols="70" name="b_body"></textarea>
+					<br><br>
+					<input type="button" value="write" onclick="boardWriteForm();">
+					<input type="reset" value="reset">
+					<input type="button" value="cancel" onclick="boardWriteCancel();">
+					
+				</form>
+			</div>
+			
+			<div class="board_list">
+				<a th:href="@{/board/list}">list</a>
+			</div>
+			
+			
+		</div>
+	</section>
+	
+	<footer th:replace="~{/include/header_nav_footer.html::footer}">
+	</footer>
+	
+</body>
+</html>

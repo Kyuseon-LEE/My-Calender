@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+<meta charset="UTF-8">
+<title th:replace="~{/include/title.html::title}"></title>
+
+<link rel="stylesheet" th:href="@{/css/common.css}">
+<link rel="stylesheet" th:href="@{/css/organizer/home.css}">
+<link rel="stylesheet" th:href="@{/css/header_nav_footer.css}">
+
+<script th:replace="~{/include/common_js.html::jquery_cdn}"></script>
+<script th:replace="~{/include/organizer_js.html::js}"></script>
+
+<style>
+.past-date {
+  background-color: #e9ecef !important;
+  color: #6c757d !important;
+  pointer-events: none !important;
+  cursor: not-allowed !important;
+  opacity: 0.6 !important;
+}
+</style>
+
+</head>
+<body>
+
+	<header th:replace="~{/include/header_nav_footer.html::header}">
+		
+	</header>
+	
+	<nav th:replace="~{/include/header_nav_footer.html::nav}">
+	</nav>
+	
+	<section>
+		<div id="section_wrap">
+			<div class="word">
+				ORGANIZER
+			</div>
+			
+			<div class="select_wrap">
+				<a class="btn_pre" href="#none"> &nbsp;&nbsp; &#60; &nbsp;&nbsp; </a>
+				<select name="p_year">
+					<option value="2024">2024</option>
+					<option value="2025">2025</option>
+					<option value="2026">2026</option>
+					<option value="2027">2027</option>
+					<option value="2028">2028</option>
+					<option value="2029">2029</option>
+					<option value="2030">2030</option>
+				</select>년 &nbsp;&nbsp;
+				<select name="p_month">
+					<option value="1">1</option>
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5">5</option>
+					<option value="6">6</option>
+					<option value="7">7</option>
+					<option value="8">8</option>
+					<option value="9">9</option>
+					<option value="10">10</option>
+					<option value="11">11</option>
+					<option value="12">12</option>
+				</select>월 &nbsp;&nbsp;
+				<a class="btn_next" href="#none"> &nbsp;&nbsp; &#62; &nbsp;&nbsp; </a>
+			</div>
+			
+			<div class="organizer">
+				<table class="table_calender" id="table_calender">
+					<thead>
+						<tr>
+							<th>일요일</th>
+							<th>월요일</th>
+							<th>화요일</th>
+							<th>수요일</th>
+							<th>목요일</th>
+							<th>금요일</th>
+							<th>토요일</th>
+						</tr>
+					</thead>
+					<tbody>
+						
+					</tbody>
+				</table>
+				
+				<!-- 일정 등록 모달 -->
+				<div id="calender_write">
+					<div class="calender_write_wrap">
+					
+						<div class="year_month_date">
+							<select name="wp_year">
+								<option value="2024">2024</option>
+								<option value="2025">2025</option>
+								<option value="2026">2026</option>
+								<option value="2027">2027</option>
+								<option value="2028">2028</option>
+								<option value="2029">2029</option>
+								<option value="2030">2030</option>
+							</select>년 &nbsp;&nbsp;
+							<select name="wp_month">
+								<option value="1">1</option>
+								<option value="2">2</option>
+								<option value="3">3</option>
+								<option value="4">4</option>
+								<option value="5">5</option>
+								<option value="6">6</option>
+								<option value="7">7</option>
+								<option value="8">8</option>
+								<option value="9">9</option>
+								<option value="10">10</option>
+								<option value="11">11</option>
+								<option value="12">12</option>
+							</select>월 &nbsp;&nbsp;
+							<select name="wp_date">
+								
+							</select>
+						</div>
+						<div class="title_body">
+							<form>
+								<input type="text" name="p_title" placeholder="INPUT PLAN TITLE"><br>
+								<input type="text" name="p_body" placeholder="INPUT PLAN BODY"><br>
+								<input type="file" name="p_file" placeholder="SELECT IMAGE FILE"><br><br>
+								<input type="button" value="WRITE">
+								<input type="reset" value="RESET">
+								<input type="button" value="CANCEL">
+							</form>
+						</div>
+					
+					</div>
+				</div>
+				
+				<!-- 일정 디테일 모달 -->
+				<div id="calender_detail">
+					<div class="calender_detail_wrap">
+						
+						<ul>
+							<li class="detail">
+								<div class="year_month_date">
+									<select name="dp_year">
+										<option value="2024">2024</option>
+										<option value="2025">2025</option>
+										<option value="2026">2026</option>
+										<option value="2027">2027</option>
+										<option value="2028">2028</option>
+										<option value="2029">2029</option>
+										<option value="2030">2030</option>
+									</select>년 &nbsp;&nbsp;
+									<select name="dp_month">
+										<option value="1">1</option>
+										<option value="2">2</option>
+										<option value="3">3</option>
+										<option value="4">4</option>
+										<option value="5">5</option>
+										<option value="6">6</option>
+										<option value="7">7</option>
+										<option value="8">8</option>
+										<option value="9">9</option>
+										<option value="10">10</option>
+										<option value="11">11</option>
+										<option value="12">12</option>
+									</select>월 &nbsp;&nbsp;
+									<select name="dp_date">
+										
+									</select>일 &nbsp;&nbsp;
+								</div>
+								<div class="title_body">
+									<form>
+										<input type="text" name="p_title" placeholder="INPUT PLAN TITLE"><br>
+										<input type="text" name="p_body" placeholder="INPUT PLAN BODY"><br>
+										<img class="plan_img"><br>
+										<input type="file" name="p_file" placeholder="SELECT IMAGE FILE"><br><br>
+										<input type="button" value="MODIFY">
+										<input type="button" value="DELETE">
+										<input type="button" value="CLOSE">
+									</form>
+								</div>
+							</li>
+							<li class="share_reply">
+								<div>
+									Plan share
+								</div>
+								<div>
+									<input type="text" name="search_friend" placeholder="INPUT FRIEND ID">
+								</div>
+								<div>
+									<ul>
+										
+									</ul>
+								</div>
+								<div>
+									Comment
+								</div>
+								<div>
+									<input type="text" name="comment" placeholder="INPUT COMMENT">
+									<a href="#none">작성</a>
+								</div>
+								<div>
+									<ul>
+									
+									</ul>
+								</div>
+							</li>
+						</ul>
+					
+					</div>
+				</div>
+			</div>
+			
+		</div>
+	</section>
+	
+	<footer th:replace="~{/include/header_nav_footer.html::footer}">
+	</footer>
+	
+</body>
+</html>

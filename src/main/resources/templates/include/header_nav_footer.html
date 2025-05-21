@@ -1,0 +1,33 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+      
+<header th:fragment="header">
+  <div id="header_wrap">
+    <div class="logo">
+      <a th:href="@{/}" style="font-size: 1.5rem; font-weight: bold;">My Calendar</a>
+    </div>
+    <div class="user-menu">
+      <th:block sec:authorize="!hasAnyRole('USER')">
+        <a th:href="@{/member/create_account_form}">회원가입</a>
+        <a th:href="@{/member/member_login_form}">로그인</a>
+      </th:block>
+
+      <th:block sec:authorize="hasAnyRole('USER')">
+        <a th:href="@{/member/member_modify_form}">정보수정</a>
+        <a th:href="@{/member/member_logout_confirm}">로그아웃</a>
+      </th:block>
+    </div>
+  </div>
+</header>
+
+<nav th:fragment="nav">
+  <div id="nav_wrap">
+    <a th:href="@{/organizer}">📅 일정 관리</a>
+  </div>
+</nav>
+
+<footer th:fragment="footer">
+  <div id="footer_wrap">
+    ⓒ 2025 OFFICE Corp. All Rights Reserved.
+  </div>
+</footer>

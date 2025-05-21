@@ -1,0 +1,929 @@
+<script th:fragment="js">
+
+// ------------------ 현재 날짜 ------------------ 
+let current_year;			// 현재 년도
+let current_month;			// 현재 월
+let current_date;			// 현재 일
+let current_day;			// 현재 요일
+
+// ------------------ 오늘 날짜 ------------------ 
+let today = new Date();
+let today_year = today.getFullYear();		// 오늘 년도
+let today_month = today.getMonth();			// 오늘 월(0 ~ 11)
+let today_date = today.getDate();			// 오늘 일
+let today_day = today.getDay();				// 오늘 요일(0 ~ 6, 0:일요일)
+
+$(document).ready(function() {
+	console.log('DOCUMENT READY!!');
+	
+	// 현재
+	setCurrentCalender(today_year, today_month, today_date, today_day);
+	
+	// 현재(<select> UI)
+	setCurrentYearAndMonthSelectUI();
+	
+	// 현재(<tr> UI)
+	addCalenderTr();
+	
+	// 현재 달의 나의 일정들 출력
+	ajax_getCurrentMonthPlans();
+	
+	// 이벤트 핸들러 설정(등록)
+	init_events();
+	
+});
+
+// 현재
+function setCurrentCalender(year, month, date, day) {
+	console.log('setCurrentCalender()');
+	
+	current_year = year;
+	current_month = month;
+	current_date = date;
+	current_day = day;
+	
+}
+
+function setCurrentYearAndMonthSelectUI() {
+	console.log('setCurrentYearAndMonthSelectUI()');
+	
+	$('#section_wrap select[name="p_year"]').val(current_year).prop('selected', true);
+	$('#section_wrap select[name="p_month"]').val(current_month + 1).prop('selected', true);
+	
+}
+
+//현재(<tr> UI)
+function addCalenderTr() {
+	console.log('addCalenderTr()');
+	
+	// 현재 월 & 첫 날
+	let thisCalenderStart = new Date(current_year, current_month, 1);
+	let thisCalenderStart_year = thisCalenderStart.getFullYear();		// 이번달 년도
+	let thisCalenderStart_month = thisCalenderStart.getMonth();			// 이번달 월
+	let thisCalenderStart_date = thisCalenderStart.getDate();			// 이번달 첫 날
+	let thisCalenderStart_day = thisCalenderStart.getDay();				// 이번달 첫 요일
+	
+	// 현재 월 & 마지막 날
+	let thisCalenderEnd = new Date(current_year, current_month + 1, 0);
+	let thisCalenderEnd_year = thisCalenderEnd.getFullYear();			// 이번달 년도
+	let thisCalenderEnd_month = thisCalenderEnd.getMonth();				// 이번달 월
+	let thisCalenderEnd_date = thisCalenderEnd.getDate();				// 이번달 마지막 날	
+	let thisCalenderEnd_day = thisCalenderEnd.getDay();					// 이번달 마지막 요일
+	
+	// 달력 구성 날짜 data
+	let dates = Array();
+	let dateCnt = 1;
+	for (let i = 0; i < 42; i++) {
+		if (i < thisCalenderStart_day || dateCnt > thisCalenderEnd_date) {
+			dates[i] = 0;
+		} else {
+			dates[i] = dateCnt;
+			dateCnt++;
+		}
+	}
+	
+	// GENERATE UI
+	let appendTag = '';
+	let dateIndex = 0;
+	for (let i = 0; i < 6; i++) {
+		
+		if (i >= 5 && dates[dateIndex] == 0) break;
+		
+		appendTag = '<tr>';
+		for (let j = 0; j < 7; j++) {
+		  let date = dates[dateIndex];
+		  let tdClass = '';
+
+		  if (date != 0) {
+		    let cellDate = new Date(current_year, current_month, date);
+		    cellDate.setHours(0, 0, 0, 0);
+		    let today = new Date();
+		    today.setHours(0, 0, 0, 0);
+		    tdClass = (cellDate < today) ? 'past-date' : '';
+		  }
+
+		  appendTag += `<td class="${tdClass}">`;
+
+		  if (date != 0) {
+		    appendTag += `<div class="date">${date}</div>`;
+		    appendTag += `<div><a class="write" href="#none">write</a></div>`;
+		    appendTag += `<div class="plan_wrap" id="date_${date}"><ul class="plan"></ul></div>`;
+		  }
+
+		  appendTag += `</td>`;
+		  dateIndex++;
+		}
+		appendTag += '</tr>';
+		$('#table_calender tbody').append(appendTag);
+	}
+	
+}
+
+//이벤트 핸들러 설정(등록)
+function init_events() {
+	console.log('init_events()');
+	
+	// 이전 달
+	$(document).on('click', '#section_wrap a.btn_pre', function() {
+		console.log('btn_pre CLICKED!!');
+		
+		setPreMonth();
+		
+	});
+	
+	// 다음 달
+	$(document).on('click', '#section_wrap a.btn_next', function() {
+		console.log('btn_next CLICKED!!');
+		
+		setNextMonth();
+		
+	});
+
+	// 년도 변경
+	$(document).on('change', '#section_wrap select[name="p_year"]', function() {
+		console.log('p_year CHANGED!!');
+		
+		setMonthBySelectChanged();
+		
+	});
+
+	// 월 변경
+	$(document).on('change', '#section_wrap select[name="p_month"]', function() {
+		console.log('p_month CHANGED!!');
+		
+		setMonthBySelectChanged();
+		
+	});
+
+	// 일정 등록 버튼
+	$(document).on('click', '#section_wrap a.write', function() {
+		console.log('write BUTTON CLICKED!!');
+		
+		let year = current_year;
+		let month = current_month + 1;
+		let date = $(this).parent('div').siblings('div.date').text();
+
+		showWritePlanView(year, month, date);
+		
+	});
+
+	// 일정 등록 년, 월에 변경에 따른 일 쎄팅
+	$(document).on('change', '#calender_write select[name="wp_year"]', function() {
+		console.log('wp_year CHANGED!!');
+
+		let year = $(this).val();
+		let month = $('#calender_write select[name="wp_month"]').val();
+		
+		setSelectDateOptions(year, month, 'wp_date');
+
+	});
+
+	$(document).on('change', '#calender_write select[name="wp_month"]', function() {
+		console.log('wp_month CHANGED!!');
+
+		let year = $('#calender_write select[name="wp_year"]').val();
+		let month = $(this).val();
+		
+		setSelectDateOptions(year, month, 'wp_date');
+
+	});
+
+	// 일정 등록 작성 버튼
+	$(document).on('click', '#calender_write input[value="WRITE"]', function() {
+		console.log('WRITE BUTTON CLICKED!!');
+
+		let year = $('#calender_write select[name="wp_year"]').val();
+		let month = $('#calender_write select[name="wp_month"]').val();
+		let date = $('#calender_write select[name="wp_date"]').val();
+
+		let title = $('#calender_write input[name="p_title"]').val();
+		let body = $('#calender_write input[name="p_body"]').val();
+		let file = $('#calender_write input[name="p_file"]').val();
+
+		if (title === '') {
+			alert('INPUT PLAN TITLE!!');
+			$('#calender_write input[name="p_title"]').focus();
+
+		} else if (body === '') {
+			alert('INPUT PLAN BODY!!');
+			$('#calender_write input[name="p_body"]').focus();
+
+		} else if (file === '') {
+			alert('SELECT IMAGE FILE!!');
+			$('#calender_write input[name="p_file"]').focus();
+			
+		} else {
+			let inputFile = $('#calender_write input[name="p_file"]');
+			let files = inputFile[0].files;
+
+			ajax_writePlan(year, month, date, title, body, files[0]);
+			
+		}
+
+	});
+
+	// 일정 등록 취소 버튼
+	$(document).on('click', '#calender_write input[value="CANCEL"]', function() {
+		console.log('CANCEL BUTTON CLICKED!!');
+		
+		hideWritePlanView();
+		
+	});
+
+
+	// 일정 디테일 뷰 모달 보이기
+	$(document).on('click', '#table_calender ul.plan li a', function() {
+		console.log('ul.plan li a CLICKED!!');
+
+		ajax_getPlan(this.getAttribute('data-p_no'));
+
+	});
+
+	// 일정 수정 년,월 변경에 따른 일 설정
+	$(document).on('change', '#calender_detail select[name="dp_year"]', function() {
+		console.log('DETAIL dp_year CHANGED!!');
+
+		let year = $(this).val();
+		let month = $('#calender_detail select[name="dp_month"]').val();
+
+		setSelectDateOptions(year, month, 'dp_date');
+
+	});
+
+	$(document).on('change', '#calender_detail select[name="dp_month"]', function() {
+		console.log('DETAIL dp_month CHANGED!!');
+
+		let year = $('#calender_detail select[name="dp_year"]').val();
+		let month = $(this).val();
+
+		setSelectDateOptions(year, month, 'dp_date');
+
+	});
+
+	// 일정 수정 버튼
+	$(document).on('click', '#calender_detail input[value="MODIFY"]', function() {
+		console.log('DETAIL VIEW MODIFY button CLICKED!!');
+
+		let year = $('#calender_detail select[name="dp_year"]').val();
+		let month = $('#calender_detail select[name="dp_month"]').val();
+		let date = $('#calender_detail select[name="dp_date"]').val();
+
+		let title = $('#calender_detail input[name="p_title"]').val();
+		let body = $('#calender_detail input[name="p_body"]').val();
+
+		let p_no = $(this).data('p_no');
+		
+		let file = $('#calender_detail input[name="p_file"]');
+		file = file[0].files[0];
+
+		ajax_modifyPlan(p_no, year, month, date, title, body, file);
+
+	});
+
+	// 일정 삭제 버튼
+	$(document).on('click', '#calender_detail input[value="DELETE"]', function() {
+		console.log('DETAIL VIEW DELETE button CLICKED!!');
+
+		ajax_removePlan($(this).data('p_no'));
+
+	});
+
+	// 일정 디테일 뷰 모달 가리기
+	$(document).on('click', '#calender_detail input[value="CLOSE"]', function() {
+		console.log('DETAIL VIEW CLOSE button CLICKED!!');
+
+		hideDetailPlanView();
+
+	});
+
+	// 친구 찾기(공유 대상) by ID
+	$(document).on('keyup', '#calender_detail input[name="search_friend"]', function() {
+		console.log('search_friend input KEYUP!!');
+
+		let word = $(this).val();
+		
+		if (word == '') {
+			$('#calender_detail li.share_reply div:nth-child(3)').css('display', 'none');
+
+		} else {
+			$('#calender_detail li.share_reply div:nth-child(3)').css('display', 'block');
+			ajax_searchFriends(word);
+
+		}
+
+	});
+
+	// 일정 공유
+	$(document).on('click', '#calender_detail li.share_reply div:nth-child(3) ul li a', function() {
+		console.log('friend id CLICKED!!');
+
+		let m_no = $(this).data('m_no');
+		let p_no = $('#calender_detail input[name="p_title"]').data('p_no');
+
+		let result = confirm(`정말 ${this.text}님께 일정을 공유 하시겠습니까?`);
+		if (result) {
+			ajax_sharePlan(p_no, m_no, this.text);
+
+		}
+
+	});
+	
+	// 코멘트 작성
+	$(document).on('click', '#calender_detail li.share_reply div:nth-child(5) a', function(){
+		console.log('comment regist button CLICKED!!');
+		
+		let comment = $('#calender_detail input[name="comment"]').val();
+		let p_ori_no = $('#calender_detail').data('p_ori_no');
+		
+		console.log('comment: ', comment);
+		console.log('p_ori_no: ', p_ori_no);
+		
+		if(comment.trim() != '')
+			ajax_registComment(p_ori_no, comment.trim());
+		
+	});
+
+}
+
+function setPreMonth() {
+	console.log('setPreMonth()');
+	
+	if ($('select[name="p_year"]').val() == 2024 && $('select[name="p_month"]').val() == 1) {
+		alert('2024년 1월 이전은 설정할 수 없습니다.');
+		return false;
+	}
+
+	let temp_year = current_year;
+	let temp_month = current_month - 1;
+	if (temp_month <= -1) {
+		temp_year -= 1;
+		temp_month = 11;
+
+	}
+
+	let preCalender = new Date(temp_year, temp_month, 1);
+	setCurrentCalender(preCalender.getFullYear(), 
+					   preCalender.getMonth(),
+					   preCalender.getDate(),
+					   preCalender.getDay());			// 데이터 설정
+	setCurrentYearAndMonthSelectUI();					// <select> UI
+	removeCalenderTr();									// 기본 <tr> 삭제
+	addCalenderTr();									// <tr> UI
+	ajax_getCurrentMonthPlans();
+
+}
+
+function setNextMonth() {
+	console.log('setNextMonth()');
+
+	if ($('select[name="p_year"]').val() == 2030 && $('select[name="p_month"]').val() == 12) {
+		alert('2030년 12월 이후는 설정할 수 없습니다.');
+		return false;
+	}
+
+	let temp_year = current_year;
+	let temp_month = current_month + 1;
+	if (temp_month >= 12) {
+		temp_year += 1;
+		temp_month = 0;
+	}
+
+	let preCalender = new Date(temp_year, temp_month, 1);
+	setCurrentCalender(preCalender.getFullYear(), 
+					   preCalender.getMonth(),
+					   preCalender.getDate(),
+					   preCalender.getDay());			// 데이터 설정
+	setCurrentYearAndMonthSelectUI();					// <select> UI
+	removeCalenderTr();									// 기본 <tr> 삭제
+	addCalenderTr();									// <tr> UI
+	ajax_getCurrentMonthPlans();
+}
+
+function removeCalenderTr() {
+	console.log('removeCalenderTr()');
+
+	$('#table_calender tbody tr').remove();
+
+}
+
+function setMonthBySelectChanged() {
+	console.log('setMonthBySelectChanged()');
+
+	let temp_year = $('select[name="p_year"]').val();
+	let temp_month = $('select[name="p_month"]').val() - 1;
+
+	let selectedCalender = new Date(temp_year, temp_month, 1);
+	setCurrentCalender(selectedCalender.getFullYear(), 
+					   selectedCalender.getMonth(),
+					   selectedCalender.getDate(),
+					   selectedCalender.getDay());			// 데이터 설정
+	removeCalenderTr();										// 기본 <tr> 삭제
+	addCalenderTr();										// <tr> UI
+	ajax_getCurrentMonthPlans();
+	
+}
+
+function showWritePlanView(year, month, date) {
+	console.log('showWritePlanView()');
+
+	$('#calender_write select[name="wp_year"]').val(year).prop('selected', true);
+	$('#calender_write select[name="wp_month"]').val(month).prop('selected', true);
+
+	setSelectDateOptions(year, month, 'wp_date');
+	$('#calender_write select[name="wp_date"]').val(date).prop('selected', true);
+
+	$('#calender_write').css('display', 'block');
+
+}
+
+function hideWritePlanView() {
+	console.log('hideWritePlanView()');
+
+	$('#calender_write input[name="p_title"]').val('');
+	$('#calender_write input[name="p_body"]').val('');
+	$('#calender_write input[name="p_file"]').val('');
+
+	$('#calender_write').css('display', 'none');
+
+}
+
+function setSelectDateOptions(year, month, select_name) {
+	console.log('setSelectDateOptions()');
+
+	// SET DATA
+	let last = new Date(year, month, 0);
+	
+	// GENERATE UI
+	$('select[name="' + select_name + '"]').children().remove();
+	for (let i = 1; i <= last.getDate(); i++) {
+		$('select[name="' + select_name + '"]').append('<option value="' + i + '">' + i + '</option>');
+	}
+
+}
+
+function showDetailPlanView(organizerDto) {
+	console.log('showDetailPlanView()');
+
+	// RENDER UI
+	if (organizerDto.p_ori_owner_id != organizerDto.m_id) {		// 내꺼 X
+		$('#calender_detail select[name="dp_year"]').attr('disabled', true);
+		$('#calender_detail select[name="dp_month"]').attr('disabled', true);
+		$('#calender_detail select[name="dp_date"]').attr('disabled', true);
+		$('#calender_detail input[name="p_title"]').attr('disabled', true);
+		$('#calender_detail input[name="p_body"]').attr('disabled', true);
+		$('#calender_detail input[name="p_file"]').css('display', 'none');
+		$('#calender_detail input[value="MODIFY"]').css('display', 'none');
+		$('#calender_detail input[value="DELETE"]').css('display', 'none');
+
+	} else {													// 내꺼 O
+		$('#calender_detail select[name="dp_year"]').attr('disabled', false);
+		$('#calender_detail select[name="dp_month"]').attr('disabled', false);
+		$('#calender_detail select[name="dp_date"]').attr('disabled', false);
+		$('#calender_detail input[name="p_title"]').attr('disabled', false);
+		$('#calender_detail input[name="p_body"]').attr('disabled', false);
+		$('#calender_detail input[name="p_file"]').css('display', 'inline-block');
+		$('#calender_detail input[value="MODIFY"]').css('display', 'inline-block');
+		$('#calender_detail input[value="DELETE"]').css('display', 'inline-block');
+
+	}
+
+	$('#calender_detail select[name="dp_year"]').val(organizerDto.p_year).prop('selected', true);
+	$('#calender_detail select[name="dp_month"]').val(organizerDto.p_month).prop('selected', true);
+
+	setSelectDateOptions(organizerDto.p_year, organizerDto.p_month, 'dp_date');
+	$('#calender_detail select[name="dp_date"]').val(organizerDto.p_date).prop('selected', true);
+
+	$('#calender_detail input[name="p_title"]').val(organizerDto.p_title);
+	$('#calender_detail input[name="p_body"]').val(organizerDto.p_body);
+
+	let uploadImgURI = `/planUploadImg/${organizerDto.p_ori_owner_id}/${organizerDto.p_img_name}`;
+	$('#calender_detail img.plan_img').attr('src', uploadImgURI);
+
+	// SET DATA
+	$('#calender_detail input').data('p_no', organizerDto.p_no);
+	$('#calender_detail').data('p_ori_no', organizerDto.p_ori_no);
+	
+	// RENDER COMMENT UI
+	ajax_getComments(organizerDto.p_ori_no);
+	
+	$('#calender_detail').css('display', 'block');
+
+}
+
+function hideDetailPlanView() {
+	console.log('hideDetailPlanView()');
+
+	$('#calender_detail input[name="p_title"]').val('');
+	$('#calender_detail input[name="p_body"]').val('');
+	$('#calender_detail input[name="p_file"]').val('');
+
+	$('#calender_detail').css('display', 'none');
+
+}
+
+function listUpComments(commentDtos) {
+	console.log('listUpComments()');
+	
+	$('#calender_detail li.share_reply div:nth-child(6) ul li').remove();
+	
+	for (let i = 0; i < commentDtos.length; i++) {
+		
+		let appendTag = `<li>${commentDtos[i].c_txt}</li>`;
+		$('#calender_detail li.share_reply div:nth-child(6) ul').append(appendTag);
+		
+	}
+	
+}
+
+// AJAX START
+function ajax_writePlan(year, month, date, title, body, file) {
+	console.log('ajax_writePlan()');
+
+	let formData = new FormData();
+	formData.append("p_year", year);
+	formData.append("p_month", month);
+	formData.append("p_date", date);
+	formData.append("p_title", title);
+	formData.append("p_body", body);
+	formData.append("file", file);
+
+	$.ajax({
+		url: '/organizer/writePlan',
+		method: 'POST',
+		processData: false,
+		contentType: false,
+		data: formData,
+		success: function(data) {
+			console.log('ajax_writePlan() COMMUNICATION SUCCESS!!');
+		
+			if (data == '' || data == null || data.result <= 0) {
+				alert('일정 등록에 문제가 발생 했습니다.');
+			} else {
+				alert('일정이 정상적으로 등록 되었습니다.');
+				
+				removeCalenderTr();
+				addCalenderTr();
+				ajax_getCurrentMonthPlans();
+				
+			}
+			
+		},
+		error: function() {
+			console.log('ajax_writePlan() COMMUNICATION ERROR!!');
+			alert('일정 등록에 문제가 발생 했습니다.');
+			
+		},
+		complete: function() {
+			console.log('ajax_writePlan() COMMUNICATION COMPLETE!!');
+
+			hideWritePlanView();
+
+		}
+
+	});
+
+}
+
+function ajax_getCurrentMonthPlans() {
+	console.log('ajax_getCurrentMonthPlans()');
+	
+	let msgDto = {
+		year: current_year,
+		month: current_month + 1
+	}
+	
+	$.ajax({
+		url: '/organizer/getPlans',
+		method: 'POST',
+		data: JSON.stringify(msgDto),
+		contentType: 'application/json; charset=utf-8',
+		dateType: 'json',
+		success: function(data) {
+			console.log('ajax_getCurrentMonthPlans() COMMUNICATION SUCCESS!!');
+			
+			let organizerDtos = data.organizerDtos;
+			for (let i = 0; i < organizerDtos.length; i++) {
+				let appendTag = `<li><a href="#none" data-p_no=${organizerDtos[i].P_NO}>${organizerDtos[i].P_TITLE}</a></li>`;
+				$(`#date_${organizerDtos[i].P_DATE} ul.plan`).append(appendTag);
+			}
+			
+		},
+		error: function() {
+			console.log('ajax_getCurrentMonthPlans() COMMUNICATION ERROR!!');
+			
+			
+		},
+		complete: function() {
+			console.log('ajax_getCurrentMonthPlans() COMMUNICATION COMPLETE!!');
+
+			hideWritePlanView();
+
+		}
+
+	});
+	
+}
+
+function ajax_getPlan(p_no) {
+	console.log('ajax_getPlan()');
+
+	let msgDto = {
+		'p_no': p_no,
+	}
+	
+	$.ajax({
+		url: '/organizer/getPlan',
+		method: 'POST',
+		data: JSON.stringify(msgDto),
+		contentType: 'application/json; charset=utf-8',
+		dateType: 'json',
+		success: function(data) {
+			console.log('ajax_getPlan() COMMUNICATION SUCCESS!!');
+			
+			showDetailPlanView(data.organizerDto);
+
+		},
+		error: function() {
+			console.log('ajax_getPlan() COMMUNICATION ERROR!!');
+		
+			
+		},
+		complete: function() {
+			console.log('ajax_getPlan() COMMUNICATION COMPLETE!!');
+
+
+
+		}
+
+	});
+
+}
+
+function ajax_removePlan(p_no) {
+	console.log('ajax_removePlan()');
+
+	let msgDto = {
+		'p_no': p_no,
+	}
+	
+	$.ajax({
+		url: '/organizer/removePlan',
+		method: 'POST',
+		data: JSON.stringify(msgDto),
+		contentType: 'application/json; charset=utf-8',
+		dateType: 'json',
+		success: function(data) {
+			console.log('ajax_removePlan() COMMUNICATION SUCCESS!!');
+			
+			if (data.result > 0) {
+				alert('일정이 정상적으로 삭제 되었습니다.');
+
+				hideDetailPlanView();
+				removeCalenderTr();
+				addCalenderTr();
+				ajax_getCurrentMonthPlans();
+
+			} else {
+				alert('일정 삭제에 문제가 발생했습니다. 다시 시도해 주세요.');
+
+			}
+
+		},
+		error: function() {
+			console.log('ajax_removePlan() COMMUNICATION ERROR!!');
+		
+			
+		},
+		complete: function() {
+			console.log('ajax_removePlan() COMMUNICATION COMPLETE!!');
+
+		}
+
+	});
+
+}
+
+function ajax_modifyPlan(p_no, year, month, date, title, body, file) {
+	console.log('ajax_modifyPlan()');
+
+	let formData = new FormData();
+	formData.append('p_no', p_no)
+	formData.append("p_year", year);
+	formData.append("p_month", month);
+	formData.append("p_date", date);
+	formData.append("p_title", title);
+	formData.append("p_body", body);
+
+	if (file != undefined) {
+		console.log('FILE IS NOT UNDEFINED');
+		formData.append("file", file);
+	} else {
+		console.log('FILE IS UNDEFINED');
+	}	
+
+	$.ajax({
+		url: '/organizer/modifyPlan',
+		method: 'POST',
+		processData: false,
+		contentType: false,
+		data: formData,
+		success: function(data) {
+			console.log('ajax_modifyPlan() COMMUNICATION SUCCESS!!');
+			
+			if (data == '' || data == null || data.result <= 0) {
+				alert('일정 수정에 문제가 발생했습니다.');
+
+			} else {
+				alert('일정이 정상적으로 수정되었습니다.');
+
+			}
+
+			removeCalenderTr();
+			addCalenderTr();
+			ajax_getCurrentMonthPlans();
+			
+		},
+		error: function() {
+			console.log('ajax_modifyPlan() COMMUNICATION ERROR!!');
+			
+			alert('일정 수정에 문제가 발생했습니다.');
+			
+		},
+		complete: function() {
+			console.log('ajax_modifyPlan() COMMUNICATION COMPLETE!!');
+
+			hideDetailPlanView();
+
+		}
+
+	});
+	
+}
+
+function ajax_searchFriends(word) {
+	console.log('ajax_searchFriends()');
+
+	let msgDto = {
+		'friendID': word,
+	}
+	
+	$.ajax({
+		url: '/organizer/searchFriends',
+		method: 'POST',
+		data: JSON.stringify(msgDto),
+		contentType: 'application/json; charset=utf-8',
+		dateType: 'json',
+		success: function(data) {
+			console.log('ajax_searchFriends() COMMUNICATION SUCCESS!!');
+			
+			let memberDtos = data.memberDtos;
+			
+			$('#calender_detail li.share_reply div:nth-child(3) ul').children().remove();
+			for (let i = 0; i < memberDtos.length; i++) {
+				let appendTag = '<li>';
+					appendTag += `<a href="#none" data-m_no=${memberDtos[i].m_no}>${memberDtos[i].m_id}</a>`;
+					appendTag += '</li>';
+
+				$('#calender_detail li.share_reply div:nth-child(3) ul').append(appendTag);
+
+			}
+
+		},
+		error: function() {
+			console.log('ajax_searchFriends() COMMUNICATION ERROR!!');
+		
+			
+		},
+		complete: function() {
+			console.log('ajax_searchFriends() COMMUNICATION COMPLETE!!');
+
+		}
+
+	});
+
+}
+
+function ajax_sharePlan(p_no, m_no, m_id) {
+	console.log('ajax_sharePlan()');
+
+	let msgDto = {
+		'p_no': p_no,
+		'm_no': m_no,
+		'm_id': m_id,
+	}
+	
+	$.ajax({
+		url: '/organizer/sharePlan',
+		method: 'POST',
+		data: JSON.stringify(msgDto),
+		contentType: 'application/json; charset=utf-8',
+		dateType: 'json',
+		success: function(data) {
+			console.log('ajax_sharePlan() COMMUNICATION SUCCESS!!');
+
+			switch(data.result) {
+				case 1:				// OrganizerConfig.java: ALREADY_SHARED_PLAN = 1: 이미 공유된 일정
+					alert('이미 공유된 일정 입니다.');
+					break;
+
+				case 2:				// OrganizerConfig.java: SHARE_PLAN_SUCCESS = 2: 일정 공유 성공
+					alert(`${m_id}님께 일정을 공유 했습니다.`);	
+					break;
+
+				case 3:				// OrganizerConfig.java: SHARE_PLAN_FAIL = 3: 일정 공유 실패
+					alert('일정 공유에 실패 했습니다.');
+					break;
+			}
+
+		},
+		error: function() {
+			console.log('ajax_sharePlan() COMMUNICATION ERROR!!');
+		
+			
+		},
+		complete: function() {
+			console.log('ajax_sharePlan() COMMUNICATION COMPLETE!!');
+
+		}
+
+	});
+
+}
+
+function ajax_registComment(p_ori_no, comment) {
+	console.log('ajax_registComment()');
+	
+	let msgDto = {
+		'p_ori_no': p_ori_no,
+		'comment': comment,
+	}
+	
+	$.ajax({
+		url: '/comment/registComment',
+		method: 'POST',
+		data: JSON.stringify(msgDto),
+		contentType: 'application/json; charset=utf-8',
+		dateType: 'json',
+		success: function(data) {
+			console.log('ajax_registComment() COMMUNICATION SUCCESS!!');
+
+			if (data.result > 0) {
+				alert('댓글이 정상 등록 되었습니다.');
+				listUpComments(data.commentDtos);
+				
+			} else {
+				alert('댓글 등록이 실패 되었습니다.');
+			}
+
+		},
+		error: function() {
+			console.log('ajax_registComment() COMMUNICATION ERROR!!');
+			
+			alert('댓글 등록이 실패 되었습니다.');
+			
+		},
+		complete: function() {
+			console.log('ajax_registComment() COMMUNICATION COMPLETE!!');
+	
+			$('#calender_detail input[name="comment"]').val('');
+			
+		}
+
+	});
+	
+}
+
+function ajax_getComments(p_ori_no) {
+	console.log('ajax_getComments()');
+	
+	let msgDto = {
+		'p_ori_no': p_ori_no,
+	}
+	
+	$.ajax({
+		url: '/comment/getComments',
+		method: 'POST',
+		data: JSON.stringify(msgDto),
+		contentType: 'application/json; charset=utf-8',
+		dateType: 'json',
+		success: function(data) {
+			console.log('ajax_getComments() COMMUNICATION SUCCESS!!');
+			
+			listUpComments(data.commentDtos);
+			
+		},
+		error: function() {
+			console.log('ajax_getComments() COMMUNICATION ERROR!!');
+			
+			
+		},
+		complete: function() {
+			console.log('ajax_getComments() COMMUNICATION COMPLETE!!');
+	
+			
+		}
+
+	});
+}
+
+</script>

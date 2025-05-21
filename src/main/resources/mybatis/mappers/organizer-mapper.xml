@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTO Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.office.calender.organizer.IOrganizerDao">
+
+	<insert id="insertNewPlan" 
+			parameterType="com.office.calender.organizer.OrganizerDto">
+	
+		INSERT INTO TBL_PLAN(
+					P_ORI_OWNER_ID, 
+					M_ID, 
+					P_YEAR, 
+					P_MONTH, 
+					P_DATE, 
+					P_TITLE, 
+					P_BODY, 
+					P_IMG_NAME) 
+				VALUES(#{m_id}, #{m_id}, #{p_year}, #{p_month}, #{p_date}, #{p_title}, #{p_body}, #{p_img_name})
+	
+	</insert>
+	
+	<select id="getMaxPNo">
+		
+		SELECT 
+			MAX(P_NO) 
+		FROM 
+			TBL_PLAN
+		
+	</select>
+	
+	<update id="updateOriNo" 
+			parameterType="Integer">
+	
+		UPDATE 
+			TBL_PLAN 
+		SET 
+			P_ORI_NO = #{p_no} 
+		WHERE 
+			P_NO = #{p_no}
+			
+	</update>
+	
+	<select id="selectPlansByMNo" 
+			parameterType="Map" 
+			resultType="Map">
+		
+		SELECT 
+			* 
+		FROM 
+			TBL_PLAN 
+		WHERE 
+			P_YEAR = #{year} AND P_MONTH = #{month} AND M_ID = #{m_id}
+				
+	</select>
+	
+	<select id="getLastInsertedId">
+		
+		SELECT LAST_INSERT_ID()
+		
+	</select>
+	
+	<select id="selectPlanByPNo" 
+			parameterType="Map" 
+			resultType="com.office.calender.organizer.OrganizerDto">
+	
+		SELECT * FROM TBL_PLAN WHERE P_NO = #{p_no}
+	
+	</select>
+	
+	<delete id="deletePlanByPNo" 
+			parameterType="Map">
+	
+		DELETE FROM 
+			TBL_PLAN 
+		WHERE 
+			P_ORI_NO = #{p_no}
+	
+	</delete>
+	
+	<update id="updatePlanByPNo" 
+			parameterType="com.office.calender.organizer.OrganizerDto">
+			
+		UPDATE 
+			TBL_PLAN 
+		SET 
+			P_YEAR = #{p_year} 
+			, P_MONTH = #{p_month} 
+			, P_DATE = #{p_date} 
+			, P_TITLE = #{p_title} 
+			, P_BODY = #{p_body} 
+			<if test="p_img_name != null">
+				, P_IMG_NAME = #{p_img_name}
+			</if>
+			, P_MOD_DATE = NOW() 
+		WHERE 
+			P_ORI_NO = #{p_no}
+	
+	</update>
+	
+	<select id="selectSearchFriends" 
+			parameterType="String" 
+			resultType="Map">
+	
+		SELECT 
+			M_NO, M_ID 
+		FROM 
+			TBL_MEMBER 
+		WHERE 
+		M_ID LIKE CONCAT('%', #{friendID}, '%') 
+		ORDER BY M_ID ASC
+	
+	</select>
+	
+	<insert id="sharePlan" 
+			parameterType="Map">
+	
+		INSERT INTO TBL_PLAN(
+			P_ORI_NO, 
+			P_ORI_OWNER_ID, 
+			M_ID, 
+			P_YEAR, 
+			P_MONTH, 
+			P_DATE, 
+			P_TITLE, 
+			P_BODY, 
+			P_IMG_NAME) 
+		VALUES(
+			#{organizerDto.p_ori_no}, 
+			#{organizerDto.p_ori_owner_id}, 
+			#{m_id}, 
+			#{organizerDto.p_year}, 
+			#{organizerDto.p_month}, 
+			#{organizerDto.p_date}, 
+			#{organizerDto.p_title}, 
+			#{organizerDto.p_body}, 
+			#{organizerDto.p_img_name})
+	
+	</insert>
+	
+	<select id="isSharePlan" 
+			parameterType="Map" 
+			resultType="Boolean">
+	
+		SELECT 
+			COUNT(*) 
+		FROM 
+			TBL_PLAN 
+		WHERE 
+			P_ORI_NO = #{organizerDto.p_ori_no} AND M_ID = #{m_id}
+	
+	</select>
+
+</mapper>
